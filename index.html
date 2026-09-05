@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>The Wedding of Dinda & Galih</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<!-- Preload the gate video + its poster so they're ready the instant the
+     page paints, instead of only starting to fetch once the browser
+     reaches the <video> tag in the DOM. This is what removes the lag/stutter
+     on first load. -->
+<link rel="preload" as="video" href="video/gate-bg.mp4" type="video/mp4">
+<link rel="preload" as="image" href="img/gate-bg-poster.jpg" fetchpriority="high">
+</head>
+<body class="locked">
+
+<!-- Scroll progress -->
+<div id="progressBar"></div>
+
+<!-- Ambient particle canvas -->
+<canvas id="particles"></canvas>
+<div class="petals" id="petals" aria-hidden="true"></div>
+
+<!-- Fixed photo watermark behind all content sections, cover → closing -->
+<div class="page-bg" aria-hidden="true"></div>
+
+<!-- ================= GATE ================= -->
+<div id="gate">
+  <div class="gate-bg">
+    <video class="gate-video" autoplay muted loop playsinline preload="auto" poster="img/gate-bg-poster.jpg">
+      <source src="video/gate-bg.mp4" type="video/mp4">
+    </video>
+    <div class="gate-overlay"></div>
+    <div class="gate-batik"></div>
+    <div class="gate-gunungan" id="gateGunungan"></div>
+    <div class="gate-border-top"></div>
+    <div class="gate-border-bottom"></div>
+  </div>
+  <div class="gate-inner">
+    <div class="gate-guest" aria-live="polite">
+      <span class="gate-guest-label">Kepada Yth.</span>
+      <span class="gate-guest-name" id="gateGuestName">Tamu Undangan</span>
+    </div>
+    <button class="btn magnetic" id="openBtn">
+      <span>Buka Undangan</span>
+    </button>
+  </div>
+</div>
+
+<!-- ================= COVER ================= -->
+<section id="cover" class="section--emerald center" style="min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:60px 0;">
+  <div class="wrap" id="coverContent">
+    <div class="mini-bloom zoom-in" data-size="36"></div>
+    <div class="medallion tilt zoom-in" id="coverMedallion" style="margin-bottom:22px;"></div>
+    <div class="fade-up">
+      <span class="eyebrow">The Wedding Of</span>
+      <h1 class="gate-names" style="margin-top:14px;">Dinda<span class="gate-amp">&amp;</span>Galih</h1>
+      <div class="cover-to">
+        <p class="to-label">Kepada Yth. Bapak/Ibu/Saudara/i</p>
+        <p class="to-name" id="guestName" aria-live="polite"><span id="guestNameText"></span></p>
+      </div>
+      <p class="lead" style="margin-top:24px;">Dengan penuh syukur, kami mengundang Bapak/Ibu/Saudara/i untuk turut hadir merayakan hari bahagia kami.</p>
+      <div class="divider"><span class="dash"></span><span class="serif" style="font-style:italic;color:var(--gold-light)">Minggu, 06 September 2026</span><span class="dash"></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= OPENING ================= -->
+<section id="opening" class="section center">
+  <div class="wrap fade-up">
+    <div class="mini-bloom zoom-in" data-size="28"></div>
+    <span class="eyebrow">Assalamu'alaikum Wr. Wb.</span>
+    <p class="lead" style="margin-top:20px;">Tanpa mengurangi rasa hormat, kami bermaksud mengundang Bapak/Ibu/Saudara/i beserta keluarga untuk berkenan hadir dan memberikan doa restu pada pernikahan kami.</p>
+  </div>
+</section>
+
+<!-- ================= COUPLE ================= -->
+<section id="couple" class="section">
+  <div class="tumpal-strip"></div>
+  <div class="wrap">
+    <div class="center fade-up">
+      <span class="eyebrow">Mempelai</span>
+      <div class="jv-divider"><span class="diamonds"><span></span><span></span><span></span></span></div>
+    </div>
+    <div class="couple-grid">
+      <div class="person fade-side-l">
+        <div class="mini-bloom zoom-in" data-size="26"></div>
+        <div class="medallion small-medallion"></div>
+        <p class="person-role">Mempelai Wanita</p>
+        <h2 class="person-name">Dinda Kurdiana S.Psi</h2>
+        <p class="person-parents">Putri Kedua dari<br>Bapak Karun &amp; Ibu Sri Suparmi</p>
+      </div>
+      <div class="amp-divider zoom-in">&amp;</div>
+      <div class="person fade-side-r">
+        <div class="mini-bloom zoom-in" data-size="26"></div>
+        <div class="medallion small-medallion"></div>
+        <p class="person-role">Mempelai Pria</p>
+        <h2 class="person-name">Galih Wahyudi</h2>
+        <p class="person-parents">Putra Pertama dari<br>Bapak Selamat Budi Santoso &amp; Ibu Wahyuningsih</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= COUNTDOWN ================= -->
+<section id="countdown-slide" class="section center">
+  <div class="wrap fade-up">
+    <div class="mini-bloom zoom-in" data-size="28"></div>
+    <span class="eyebrow">Menghitung Hari</span>
+    <h2 class="serif" style="font-style:italic; font-size:30px; margin-top:12px;">Menuju Hari Bahagia</h2>
+    <div class="countdown" id="countdown">
+      <div class="cd-cell pop-in"><span class="cd-num" id="cd-d">00</span><span class="cd-label">Hari</span></div>
+      <div class="cd-cell pop-in"><span class="cd-num" id="cd-h">00</span><span class="cd-label">Jam</span></div>
+      <div class="cd-cell pop-in"><span class="cd-num" id="cd-m">00</span><span class="cd-label">Menit</span></div>
+      <div class="cd-cell pop-in"><span class="cd-num" id="cd-s">00</span><span class="cd-label">Detik</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= EVENTS ================= -->
+<section id="events" class="section section--motif" style="background:var(--ivory-deep-a);">
+  <div class="wrap">
+    <div class="center fade-up">
+      <span class="eyebrow">Waktu &amp; Tempat</span>
+      <h2 class="serif" style="font-style:italic; font-size:30px; margin-top:12px;">Akad &amp; Resepsi</h2>
+      <div class="jv-divider"><span class="diamonds"><span></span><span></span><span></span></span></div>
+    </div>
+    <div class="event-cards">
+      <div class="event-card fade-side-l">
+        <span class="eyebrow">Akad Nikah</span>
+        <p class="event-meta">
+          <strong>Minggu, 06 September 2026</strong><br>
+          Pukul 09.00 WITA – Selesai<br>
+          Jl. Merdeka V Rt 89 <br>
+           (LPQ Aisyiyah Al-Ihsan)
+        </p>
+        <a class="event-map" href="https://maps.app.goo.gl/uysHogwFdTq5GStr5" target="_blank" rel="noopener">Lihat Lokasi</a>
+      </div>
+      <div class="event-card fade-side-r">
+        <span class="eyebrow">Resepsi & Ngunduh Mantu</span>
+        <p class="event-meta">
+          <strong>Minggu, 13 September 2026</strong><br>
+          Pukul 11.00 – Selesai WITA<br>
+          Jl. SKB Karya Bhakti, Lempake, Kec. Samarinda Utara, Kota Samarinda, Kalimantan Timur 75116 RT 44
+        </p>
+        <a class="event-map" href="https://maps.app.goo.gl/r3AYb6xcFjepXAkB7?g_st=aw" target="_blank" rel="noopener">Lihat Lokasi</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PERTEMUAN KAMI ================= -->
+<section id="lovestory" class="section section--emerald motif-bunga">
+  <div class="tumpal-strip"></div>
+  <div class="wrap">
+    <div class="center fade-up">
+      <div class="mini-bloom zoom-in" data-size="30"></div>
+      <span class="eyebrow">Kisah Cinta Kami</span>
+      <h2 class="serif" style="font-style:italic; font-size:30px; margin-top:12px;">Pertemuan Kami</h2>
+      <div class="jv-divider"><span class="diamonds"><span></span><span></span><span></span></span></div>
+    </div>
+    <div class="timeline">
+      <div class="tl-item fade-side-l">
+        <span class="tl-num">01</span>
+        <div>
+          <p class="tl-date">Perkenalan</p>
+          <p class="tl-text">Tidak ada yang kebetulan di dunia ini. Semua sudah tersusun dengan sangat rapi, oleh sang maha kuasa, kita tidak bisa memilih kepada siapa kita akan jatuh cinta. Kami berkenalan pada tahun 2023.</p>
+        </div>
+      </div>
+      <div class="tl-item fade-side-r">
+        <span class="tl-num">02</span>
+        <div>
+          <p class="tl-date">Pendekatan</p>
+          <p class="tl-text">Katanya cinta dapat tumbuh dengan kebersamaan seiring berjalannya waktu, kami semakin dekat. Memang tidak ada kata pacaran, tapi Tuhan mentakdirkan kita untuk bersama.</p>
+        </div>
+      </div>
+      <div class="tl-item fade-side-l">
+        <span class="tl-num">03</span>
+        <div>
+          <p class="tl-date">Lamaran</p>
+          <p class="tl-text">Kehendak-Nya menuntun kami pada sebuah pertemuan keluarga yang tak pernah disangka, hingga akhirnya pada 10 November 2025 membawa kami pada sebuah ikatan yang di-Ridhoi-Nya.</p>
+        </div>
+      </div>
+      <div class="tl-item fade-side-r">
+        <span class="tl-num">04</span>
+        <div>
+          <p class="tl-date">Pernikahan</p>
+          <p class="tl-text">Bukan karena bertemu lalu berjodoh, tapi karena berjodohlah kami bisa bertemu dan memutuskan untuk mengikrarkan janji suci pernikahan pada 06 September 2026.</p>
+        </div>
+      </div>
+    </div>
+    <blockquote class="story-quote zoom-in">
+      Apa yang menjadi takdirmu akan menemukan jalannya untuk menemukanmu.
+      <cite>&mdash; Ali Bin Abi Thalib</cite>
+    </blockquote>
+  </div>
+</section>
+
+<!-- ================= GALLERY ================= -->
+<section id="gallery" class="section center" style="background:var(--ivory-deep-a);">
+  <div class="wrap fade-up">
+    <span class="eyebrow">Galih & Dinda</span>
+    <div class="jv-divider"><span class="diamonds"><span></span><span></span><span></span></span></div>
+    <div class="gallery-frame zoom-in">
+      <div class="gallery-floral gallery-floral--tl" id="galleryFloralTL" aria-hidden="true"></div>
+      <figure class="gallery-single">
+        <img src="fotobg/fotobaru2.jpeg" alt="Foto terbaru Galih & Dinda" loading="lazy">
+      </figure>
+      <div class="gallery-floral gallery-floral--br" id="galleryFloralBR" aria-hidden="true"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= DIGITAL GIFT ================= -->
+<section id="gift" class="section section--emerald center motif-ceplok">
+  <div class="tumpal-strip"></div>
+  <div class="wrap fade-up">
+    <div class="mini-bloom zoom-in" data-size="28"></div>
+    <span class="eyebrow">Amplop Digital</span>
+    <h2 class="serif" style="font-style:italic; font-size:30px; margin-top:12px;">Tanda Kasih</h2>
+    <div class="jv-divider jv-divider--light"><span class="diamonds"><span></span><span></span><span></span></span></div>
+    <p class="lead" style="margin-top:18px;">Doa restu Anda adalah karunia yang paling berarti. Bila ingin memberi tanda kasih, kami sediakan pilihan cashless berikut.</p>
+    <div class="gift-cards">
+      <div class="gift-card pop-in">
+        <div style="text-align:left;">
+          <span class="gift-bank">Bank Mandiri</span>
+          <p class="gift-num" id="rek1">1480023916169</p>
+          <span class="gift-owner">a.n. Dinda Kurdiana</span>
+        </div>
+        <button class="copy-btn" data-copy="rek1">Salin</button>
+      </div>
+      <div class="gift-card pop-in">
+        <div style="text-align:left;">
+          <span class="gift-bank">Bank Panin</span>
+          <p class="gift-num" id="rek2">6303015113</p>
+          <span class="gift-owner">a.n. Galih Wahyudi</span>
+        </div>
+        <button class="copy-btn" data-copy="rek2">Salin</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= RSVP ================= -->
+<section id="rsvp" class="section center">
+  <div class="wrap">
+    <div class="fade-up">
+      <div class="mini-bloom zoom-in" data-size="28"></div>
+      <span class="eyebrow">Konfirmasi Kehadiran</span>
+      <h2 class="serif" style="font-style:italic; font-size:30px; margin-top:12px;">Ucapan &amp; Doa Restu</h2>
+      <div class="jv-divider"><span class="diamonds"><span></span><span></span><span></span></span></div>
+    </div>
+    <form class="rsvp-form fade-up" id="rsvpForm" style="text-align:left;">
+      <div>
+        <label for="rsvpName">Nama</label>
+        <input type="text" id="rsvpName" placeholder="Nama Anda" required>
+      </div>
+      <div>
+        <label>Konfirmasi Kehadiran</label>
+        <div class="rsvp-toggle">
+          <button type="button" data-att="Hadir" class="active">Hadir</button>
+          <button type="button" data-att="Tidak Hadir">Tidak Hadir</button>
+        </div>
+      </div>
+      <div>
+        <label for="rsvpMsg">Ucapan &amp; Doa</label>
+        <textarea id="rsvpMsg" rows="3" placeholder="Tuliskan ucapan dan doa restu Anda" required></textarea>
+      </div>
+      <button type="submit" class="btn rsvp-submit dark magnetic"><span>Kirim Ucapan</span></button>
+    </form>
+    <div class="wishes-list" id="wishesList">
+      <p class="wish-empty">Memuat ucapan…</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CLOSING ================= -->
+<section id="closing" class="section--emerald">
+  <div class="closing-gunungan" id="closingGunungan"></div>
+  <div class="wrap">
+    <div class="closing-floral closing-floral--l zoom-in" id="closingFloralL" aria-hidden="true"></div>
+    <div class="closing-floral closing-floral--r zoom-in" id="closingFloralR" aria-hidden="true"></div>
+    <div class="medallion tilt zoom-in" id="closeMedallion" style="margin:0 auto 20px;"></div>
+    <div class="fade-up">
+      <p class="lead">Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir dan memberikan doa restu.</p>
+      <div class="jv-divider jv-divider--light"><span class="diamonds"><span></span><span></span><span></span></span></div>
+      <h2 class="closing-names">Wassalamu'alaikum Wr. Wb.</h2>
+      <p class="closing-note">Dinda &amp; Galih<br>beserta keluarga besar</p>
+    </div>
+  </div>
+</section>
+
+<footer>Undangan Digital &middot; Dibuat dengan Warung Yuda</footer>
+
+<button class="audio-toggle" id="audioToggle" aria-label="Putar musik" title="Putar musik">
+  <span class="audio-icon">♪</span>
+  <span class="pulse-ring"></span>
+</button>
+<audio id="bgAudio" loop preload="none">
+  <source src="sound/smaragita4.mpeg" type="audio/mpeg">
+  <!-- Tambahkan tag <source> berikut dan isi src dengan file musik pilihan Anda, contoh:
+       <source src="musik.mp3" type="audio/mpeg"> -->
+</audio>
+
+<!-- ================= SLIDE NAVIGATION ================= -->
+<nav class="slide-nav" id="slideNav" aria-label="Navigasi bagian undangan">
+  <button class="slide-dot" data-target="cover" aria-label="Sampul"><span aria-hidden="true">💍</span></button>
+  <button class="slide-dot" data-target="opening" aria-label="Pembukaan"><span aria-hidden="true">🕊️</span></button>
+  <button class="slide-dot" data-target="couple" aria-label="Mempelai"><span aria-hidden="true">💑</span></button>
+  <button class="slide-dot" data-target="countdown-slide" aria-label="Hitung Mundur"><span aria-hidden="true">⏳</span></button>
+  <button class="slide-dot" data-target="events" aria-label="Akad dan Resepsi"><span aria-hidden="true">🕌</span></button>
+  <button class="slide-dot" data-target="lovestory" aria-label="Pertemuan Kami"><span aria-hidden="true">📖</span></button>
+  <button class="slide-dot" data-target="gallery" aria-label="Galeri"><span aria-hidden="true">🖼️</span></button>
+  <button class="slide-dot" data-target="gift" aria-label="Amplop Digital"><span aria-hidden="true">💝</span></button>
+  <button class="slide-dot" data-target="rsvp" aria-label="Ucapan dan Doa"><span aria-hidden="true">✍️</span></button>
+  <button class="slide-dot" data-target="closing" aria-label="Penutup"><span aria-hidden="true">🙏</span></button>
+</nav>
+
+<script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,663 @@
+:root{
+  /* Maroon wedding palette — deep red backgrounds with warm gold accents
+     and light cream text for readability. Variable names below
+     (--ivory-*, --emerald-*) are historical from earlier palettes but
+     kept as-is so every var(--...) reference throughout this file didn't
+     need to be renamed. */
+  --ivory:#35020b;
+  --ivory-deep:transparent;
+  --emerald-deep:transparent;
+  --emerald:transparent;
+  --emerald-soft:#350e16;
+  --gold:#c09112;
+  --gold-light:#f7a00b;
+  --ink:#f7ecde;
+  --ink-soft:#e2e3dc;
+  --ink-on-gold:#3B0E16;
+  --line:rgba(217,194,154,0.28);
+  --max:720px;
+
+  /* Translucent versions of the section colours above, used to let the
+     fixed page background photo show softly through each section. */
+  --emerald-deep-a:transparent;
+  --ivory-deep-a:transparent;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:'Jost', sans-serif;
+  background:var(--ivory);
+  color:var(--ink);
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+body.locked{ height:100vh; overflow:hidden; }
+
+/* ---- Fixed background photo behind cover→closing content ----
+   A position:fixed layer (not background-attachment:fixed, which is
+   unreliable on iOS Safari) sitting behind all normal-flow content via
+   negative z-index. The sections above it use translucent backgrounds
+   (see --emerald-deep-a / --ivory-deep-a) so the photo shows through. */
+.page-bg{
+  position:fixed; inset:0; z-index:-1;
+  background:url("img/gate-bg.jpg") center/cover no-repeat;
+}
+.page-bg::after{
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(180deg, rgba(80,6,20,0.72) 0%, rgba(74,11,24,0.78) 50%, rgba(38,0,7,0.82) 100%);
+}
+
+h1,h2,h3,.serif{ font-family:'Cormorant Garamond', serif; font-weight:500; }
+.eyebrow{
+  font-family:'Jost', sans-serif;
+  letter-spacing:0.28em;
+  text-transform:uppercase;
+  font-size:12px;
+  color:var(--gold);
+  font-weight:500;
+}
+.wrap{ max-width:var(--max); margin:0 auto; padding:0 28px; }
+section{ position:relative; }
+
+/* ---------- Scroll progress bar ---------- */
+#progressBar{
+  position:fixed; top:0; left:0; height:3px; width:0%;
+  background:linear-gradient(90deg, var(--gold), var(--gold-light));
+  z-index:200; transition:width .08s linear;
+}
+
+/* ---------- Ambient particle canvas ---------- */
+#particles{
+  position:fixed; inset:0; z-index:1; pointer-events:none;
+  width:100%; height:100%;
+}
+
+/* ---------- Floating petals — gentle ambient flowers drifting down
+   over every slide, generated and randomised in script.js ---------- */
+.petals{ position:fixed; inset:0; z-index:1; pointer-events:none; overflow:hidden; }
+.petal{
+  position:absolute; top:-8%;
+  border-radius:0% 70% 0% 70%;
+  animation-name:petalFall;
+  animation-timing-function:linear;
+  animation-iteration-count:infinite;
+  will-change:transform, opacity;
+}
+@keyframes petalFall{
+  0%{ transform:translate(0,-10vh) rotate(0deg); opacity:0; }
+  10%{ opacity:.65; }
+  90%{ opacity:.65; }
+  100%{ transform:translate(var(--drift,40px),112vh) rotate(360deg); opacity:0; }
+}
+
+/* ---------- Small single-bloom accent, sprinkled near section
+   headings — generated in script.js, sized/positioned per spot ---------- */
+.mini-bloom{ display:inline-flex; margin:0 auto 6px; }
+.mini-bloom svg{ display:block; }
+
+/* ---------- Monogram signature element ---------- */
+.medallion{ display:inline-flex; align-items:center; justify-content:center; }
+.medallion svg{ display:block; }
+.tilt{ transition:transform .25s ease-out; will-change:transform; }
+
+/* ---------- GATE / COVER ---------- */
+#gate{
+  position:fixed; inset:0; z-index:100;
+  background:
+    radial-gradient(120% 100% at 50% 0%, #8C2136 0%, var(--emerald-deep) 60%, #3B0E16 100%);
+  display:flex; align-items:center; justify-content:center;
+  transition:transform 1.1s cubic-bezier(.65,0,.35,1), opacity 1.1s ease;
+  overflow:hidden;
+}
+#gate.open{ transform:translateY(-100%); opacity:0.4; pointer-events:none; }
+
+/* ---- Javanese wedding background dressing for the gate ---- */
+.gate-bg{ position:absolute; inset:0; z-index:1; pointer-events:none; overflow:hidden; }
+
+/* Background video: fills the gate, cropped to cover, muted/looping */
+.gate-video{
+  position:absolute; inset:0;
+  width:100%; height:100%;
+  object-fit:cover; object-position:center;
+}
+/* Deep maroon wash over the video so the light text stays readable */
+.gate-overlay{
+  position:absolute; inset:0;
+  background:
+    linear-gradient(180deg, rgba(74,11,24,0.4) 0%, rgba(58,9,19,0.55) 55%, rgba(30,4,10,0.7) 100%);
+}
+
+/* Kawung batik tile, tiled faintly across the whole gate */
+.gate-batik{
+  position:absolute; inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Cg fill='none' stroke='%23D9C29A' stroke-width='0.6'%3E%3Cellipse cx='15' cy='15' rx='10' ry='6'/%3E%3Cellipse cx='45' cy='15' rx='10' ry='6'/%3E%3Cellipse cx='15' cy='45' rx='10' ry='6'/%3E%3Cellipse cx='45' cy='45' rx='10' ry='6'/%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/svg%3E");
+  background-repeat:repeat;
+  opacity:0.12;
+}
+
+/* Gunungan silhouette anchored at the base of the gate — a nod to the
+   wayang/gunungan shape used ceremonially in Javanese wedding staging */
+.gate-gunungan{
+  position:absolute; left:50%; bottom:-6%; width:min(640px,150vw);
+  transform:translateX(-50%); opacity:0.9;
+}
+.gate-gunungan svg{ display:block; width:100%; height:auto; }
+
+/* Parang-inspired diagonal border strips top & bottom of the gate */
+.gate-border-top, .gate-border-bottom{
+  position:absolute; left:0; right:0; height:9px;
+  background:repeating-linear-gradient(135deg, var(--gold) 0 3px, transparent 3px 13px);
+  opacity:0.55;
+}
+.gate-border-top{ top:0; }
+.gate-border-bottom{ bottom:0; }
+
+.gate-inner{
+  text-align:center; color:var(--ink); padding:44px 36px;
+  display:flex; flex-direction:column; align-items:center; gap:22px;
+  position:relative; z-index:2;
+  margin-top:12vh;
+}
+/* Ornamental corner frame around the gate content, echoing a keraton gapura */
+.gate-inner::before, .gate-inner::after{
+  content:''; position:absolute; width:34px; height:34px;
+  border:1px solid var(--gold); opacity:0.65;
+}
+.gate-inner::before{ top:0; left:0; border-right:none; border-bottom:none; }
+.gate-inner::after{ bottom:0; right:0; border-left:none; border-top:none; }
+
+.gate-inner .eyebrow{ color:var(--gold); }
+.gate-names{
+  font-size:clamp(40px,10vw,58px);
+  line-height:1.05;
+  font-style:italic;
+  color:var(--ink);
+}
+.gate-amp{ color:var(--gold); display:block; font-size:0.6em; margin:4px 0; }
+
+/* Guest name shown directly on the opening gate */
+.gate-guest{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:4px;
+  margin-bottom:2px;
+  max-width:min(90vw, 520px);
+}
+.gate-guest-label{
+  font-size:11px;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:var(--ink-soft);
+}
+.gate-guest-name{
+  font-family:'Cormorant Garamond', serif;
+  font-style:italic;
+  font-size:clamp(22px, 5vw, 30px);
+  line-height:1.2;
+  color:var(--gold);
+  text-align:center;
+  word-break:break-word;
+}
+
+/* "Kepada Yth. [Nama Tamu]" — filled in live from the ?to= link parameter */
+.cover-to{ margin:18px 0; }
+.cover-to .to-label{ font-size:13px; letter-spacing:0.08em; color:var(--ink-soft); }
+.cover-to .to-name{
+  font-family:'Cormorant Garamond', serif;
+  font-style:italic;
+  font-size:clamp(22px, 5vw, 28px);
+  font-weight:500;
+  color:var(--gold);
+  min-height:32px;
+  margin-top:6px;
+  line-height:1.25;
+  word-break:break-word;
+}
+/* ---- Small Javanese-inspired kawung diamond divider, reused under section titles ---- */
+.jv-divider{ display:flex; align-items:center; justify-content:center; width:170px; margin:16px auto 0; }
+.jv-divider::before, .jv-divider::after{ content:''; flex:1; height:1px; background:var(--line); }
+.jv-divider .diamonds{ display:flex; align-items:center; gap:6px; margin:0 12px; flex-shrink:0; }
+.jv-divider .diamonds span{ width:6px; height:6px; background:var(--gold); transform:rotate(45deg); display:inline-block; }
+.jv-divider .diamonds span:nth-child(2){ width:8px; height:8px; }
+.jv-divider--light::before, .jv-divider--light::after{ background:rgba(217,194,154,0.35); }
+.jv-divider--light .diamonds span{ background:var(--gold-light); }
+
+.btn{
+  appearance:none; border:1px solid var(--gold);
+  background:transparent; color:var(--ink);
+  font-family:'Jost', sans-serif; letter-spacing:0.18em; text-transform:uppercase;
+  font-size:11px; padding:15px 30px; cursor:pointer;
+  display:inline-flex; align-items:center; gap:10px;
+  transition:background .35s ease, color .35s ease, transform .18s ease;
+  position:relative;
+}
+.btn:hover{ background:var(--gold); color:var(--ink-on-gold); }
+.btn:focus-visible{ outline:2px solid var(--gold-light); outline-offset:3px; }
+.magnetic{ will-change:transform; }
+
+/* Breathing glow around the gate open button */
+#openBtn{ animation:breathe 3.2s ease-in-out infinite; }
+@keyframes breathe{
+  0%,100%{ box-shadow:0 0 0 0 rgba(180,144,90,0.0); }
+  50%{ box-shadow:0 0 22px 2px rgba(180,144,90,0.28); }
+}
+
+/* ---------- GENERIC SECTION RHYTHM ---------- */
+.section{ min-height:100svh; padding:72px 0 64px; display:flex; align-items:center; }
+.section > .wrap{ width:100%; }
+.section--emerald{ background:var(--emerald-deep-a); color:var(--ink); }
+.section--emerald .eyebrow{ color:var(--gold); }
+.center{ text-align:center; }
+.divider{
+  display:flex; align-items:center; gap:14px; justify-content:center; margin:26px 0;
+}
+.divider .dash{ width:60px; height:1px; background:var(--line); }
+.lead{ font-family:'Cormorant Garamond', serif; font-style:italic; font-size:19px; line-height:1.8; color:var(--ink-soft); max-width:520px; margin:0 auto; }
+
+/* couple */
+.couple-grid{ display:flex; flex-direction:column; align-items:center; gap:56px; margin-top:56px; }
+.person{ text-align:center; }
+.person-name{ font-size:clamp(30px,6vw,38px); font-style:italic; margin:14px 0 10px; }
+.person-role{ font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--gold); margin-bottom:10px; }
+.person-parents{ font-size:14px; line-height:1.9; color:var(--ink-soft); max-width:340px; margin:0 auto; }
+.amp-divider{ font-family:'Cormorant Garamond', serif; font-style:italic; font-size:26px; color:var(--gold); text-align:center; }
+
+/* countdown */
+.countdown{ display:flex; gap:14px; justify-content:center; margin-top:44px; flex-wrap:wrap; }
+.cd-cell{
+  width:78px; padding:18px 0; border:1px solid var(--line);
+  display:flex; flex-direction:column; gap:6px; align-items:center;
+  position:relative; overflow:hidden;
+}
+.cd-num{ font-family:'Cormorant Garamond', serif; font-size:30px; display:inline-block; }
+.cd-num.tick{ animation:tickPop .4s ease; }
+@keyframes tickPop{
+  0%{ transform:translateY(-10px); opacity:0; }
+  100%{ transform:translateY(0); opacity:1; }
+}
+.cd-label{ font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--gold); }
+
+/* events */
+.event-cards{ display:flex; flex-direction:column; gap:28px; margin-top:52px; }
+.event-card{
+  border:1px solid rgba(255,255,255,0.25);
+  padding:38px 30px;
+  text-align:center;
+
+  /* Glassmorphism: transparan + blur */
+  background:rgba(249, 32, 32, 0.177);
+  backdrop-filter:blur(5px);
+  -webkit-backdrop-filter:blur(15px);
+
+  /* Efek kaca */
+  box-shadow:
+    0 8px 32px rgba(251, 176, 176, 0.3),
+    inset 0 1px 0 rgba(255,255,255,0.08);
+
+    border-radius: 12px;
+
+  transition:
+    transform .35s ease,
+    box-shadow .35s ease,
+    border-color .35s ease,
+    background .35s ease;
+}
+.event-card:hover{
+  transform:translateY(-6px);
+
+  background:rgba(255,255,255,0.12);
+  border-color:rgba(255,255,255,0.4);
+
+  box-shadow:
+    0 18px 40px rgba(0,0,0,0.3),
+    inset 0 1px 0 rgba(255,255,255,0.12);
+}
+.event-card .eyebrow{ color:var(--gold); }
+.event-title{ font-size:26px; font-style:italic; margin:10px 0 18px; }
+.event-meta{ font-size:14px; line-height:2; color:var(--ink-soft); }
+.event-meta strong{ color:var(--ink); font-weight:500; }
+.event-map{
+  margin-top:18px; display:inline-block; font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--ink); text-decoration:none; border-bottom:1px solid var(--gold); padding-bottom:3px;
+  transition:letter-spacing .3s ease;
+}
+.event-map:hover{ letter-spacing:.2em; }
+
+/* our-story timeline — four chapters (Pertemuan/Pendekatan/Lamaran/
+   Pernikahan), alternating slide-in left/right for a storytelling rhythm */
+.timeline{ margin-top:56px; display:flex; flex-direction:column; gap:0; }
+.tl-item{ display:grid; grid-template-columns:64px 1fr; gap:6px 20px; padding:26px 0; border-bottom:1px solid var(--line); }
+.tl-item:last-child{ border-bottom:none; }
+.tl-num{ font-family:'Cormorant Garamond', serif; font-style:italic; font-size:26px; color:var(--gold); }
+.tl-date{ font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--gold); margin-bottom:6px; }
+.tl-text{ font-size:15px; line-height:1.85; color:var(--ink); }
+
+.story-quote{
+  margin:40px auto 0; max-width:480px; text-align:center;
+  font-family:'Cormorant Garamond', serif; font-style:italic;
+  font-size:19px; line-height:1.8; color:var(--ink);
+  position:relative; padding:26px 18px 0;
+}
+.story-quote::before{
+  content:'\201C'; display:block; font-size:44px; line-height:1;
+  color:var(--gold); margin-bottom:4px;
+}
+.story-quote cite{
+  display:block; margin-top:14px; font-style:normal;
+  font-family:'Jost', sans-serif; font-size:11px; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--gold);
+}
+
+/* gallery — latest photo in an elegant oval frame, with a floral spray
+   trailing from two opposite corners like a classic wedding cameo */
+.gallery-frame{
+  margin:50px auto 0;
+  width:min(440px, 88vw);
+  position:relative;
+}
+.gallery-single{
+  width:100%;
+  aspect-ratio:1 / 1.18;
+  padding:12px;
+  border:1px solid var(--gold);
+  border-radius:50%;
+  background:var(--ivory);
+  box-shadow:0 24px 44px -28px rgba(74,53,32,0.35);
+  overflow:hidden;
+  position:relative;
+}
+
+.gallery-single::before{
+  content:'';
+  position:absolute;
+  inset:6px;
+  border:1px solid var(--line);
+  border-radius:50%;
+  pointer-events:none;
+  z-index:2;
+}
+
+.gallery-single img{
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center 42%;
+  border:none;
+  border-radius:50%;
+}
+
+.gallery-floral{
+  position:absolute; width:34%; max-width:150px;
+  pointer-events:none; z-index:3;
+}
+.gallery-floral svg{ display:block; width:100%; height:auto; }
+.gallery-floral--tl{ top:-8%; left:-9%; }
+.gallery-floral--br{ bottom:-8%; right:-9%; transform:rotate(180deg); }
+
+/* gift */
+.gift-cards{ display:flex; flex-direction:column; gap:16px; margin-top:48px; }
+.gift-card{ border:1px solid var(--line); padding:24px; display:flex; justify-content:space-between; align-items:center; gap:16px; background:rgba(255,255,255,0.02); transition:border-color .3s ease; }
+.gift-card:hover{ border-color:var(--gold); }
+.gift-bank{ font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--gold); }
+.gift-num{ font-family:'Cormorant Garamond', serif; font-size:22px; letter-spacing:.03em; margin:6px 0 2px; }
+.gift-owner{ font-size:13px; color:var(--ink-soft); }
+.copy-btn{
+  border:1px solid var(--gold); background:transparent; color:var(--ink);
+  font-size:10px; letter-spacing:.12em; text-transform:uppercase; padding:9px 14px; cursor:pointer;
+  white-space:nowrap; transition:background .3s ease, color .3s ease;
+}
+.copy-btn:hover{ background:var(--gold); color:var(--ink-on-gold); }
+
+/* rsvp */
+.rsvp-form{ margin-top:48px; display:flex; flex-direction:column; gap:18px; }
+label{ font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--gold); display:block; margin-bottom:8px; }
+input[type=text], textarea{
+  width:100%; background:transparent; border:none; border-bottom:1px solid var(--line);
+  color:var(--ink); font-family:'Jost',sans-serif; font-size:15px; padding:8px 2px;
+  transition:border-color .3s ease;
+}
+input[type=text]:focus, textarea:focus{ outline:none; border-bottom-color:var(--gold); }
+.rsvp-toggle{ display:flex; gap:10px; }
+.rsvp-toggle button{
+  flex:1; padding:12px 0; border:1px solid var(--line); background:transparent;
+  font-size:12px; letter-spacing:.1em; text-transform:uppercase; cursor:pointer; color:var(--ink-soft);
+  transition:background .25s ease, color .25s ease, border-color .25s ease;
+}
+.rsvp-toggle button.active{ border-color:var(--gold); background:var(--gold); color:var(--ivory); }
+.rsvp-submit{ align-self:flex-start; margin-top:6px; }
+.rsvp-submit.dark{ border-color:var(--ink); color:var(--ink); }
+.rsvp-submit.dark:hover{ background:var(--ink); color:var(--ivory); }
+/* While a wish is being sent in the background, mute the button instead
+   of letting it look clickable — prevents accidental double submits. */
+.rsvp-submit:disabled{ opacity:0.55; cursor:default; pointer-events:none; }
+.wishes-list{ margin-top:44px; display:flex; flex-direction:column; gap:20px; max-height:340px; overflow-y:auto; padding-right:6px;}
+.wish{ border-bottom:1px solid var(--line); padding-bottom:16px; animation:wishIn .5s ease; }
+/* Optimistic wish shown immediately on submit, before the background
+   save is confirmed — a faint pulse hints it's still syncing. */
+.wish--pending{ opacity:0.72; animation:wishIn .5s ease, wishPulse 1.4s ease-in-out infinite; }
+@keyframes wishPulse{ 0%,100%{ opacity:0.72; } 50%{ opacity:0.95; } }
+@keyframes wishIn{
+  from{ opacity:0; transform:translateY(10px); }
+  to{ opacity:1; transform:none; }
+}
+.wish-name{ font-size:14px; font-weight:500; }
+.wish-tag{ font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--gold); margin-left:8px; }
+.wish-text{ font-size:14px; color:var(--ink-soft); margin-top:4px; line-height:1.7; }
+.wish-empty{ font-size:13px; color:var(--ink-soft); font-style:italic; }
+
+/* closing */
+#closing{ min-height:100svh; padding:90px 0 60px; display:flex; align-items:center; text-align:center; overflow:hidden; }
+#closing .wrap{ position:relative; }
+.closing-floral{
+  position:absolute; top:-10px; width:64px; opacity:0.8;
+  pointer-events:none; z-index:-1;
+}
+.closing-floral svg{ display:block; width:100%; height:auto; }
+.closing-floral--l{ left:-4px; transform:scaleX(-1) rotate(-8deg); }
+.closing-floral--r{ right:-4px; transform:rotate(-8deg); }
+.closing-gunungan{
+  position:absolute; left:50%; bottom:0; width:min(560px,140vw);
+  transform:translateX(-50%); opacity:0.22; pointer-events:none; z-index:0;
+}
+.closing-gunungan svg{ display:block; width:100%; height:auto; }
+.closing-names{ font-size:clamp(32px,7vw,44px); font-style:italic; margin:18px 0 6px; }
+.closing-note{ font-size:14px; line-height:2; color:var(--ink-soft); max-width:440px; margin:20px auto 0; }
+footer{ text-align:center; padding:26px; font-size:10px; letter-spacing:.1em; color:var(--ink-soft); background:var(--emerald-deep-a); position:relative; z-index:2; }
+
+/* Faint kawung batik texture, usable on any ivory section for cohesion */
+.section--motif{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Cg fill='none' stroke='%23B4905A' stroke-width='0.6'%3E%3Cellipse cx='15' cy='15' rx='10' ry='6'/%3E%3Cellipse cx='45' cy='15' rx='10' ry='6'/%3E%3Cellipse cx='15' cy='45' rx='10' ry='6'/%3E%3Cellipse cx='45' cy='45' rx='10' ry='6'/%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/svg%3E");
+  background-repeat:repeat;
+  background-blend-mode:multiply;
+}
+
+/* ---- Additional traditional batik motifs, layered subtly per section ----
+   Parang (diagonal "blade" motif, historically a royal/noble pattern) — used
+   behind the couple's names, a nod to dignity and strength.
+   Truntum (small guiding-star motif, traditionally worn by the parents at a
+   Javanese wedding as a blessing that love keeps "leading the way") — used
+   behind the love-story timeline.
+   Ceplok (repeating rosette motif, associated with harmony and prosperity)
+   — used behind the digital-gift section. */
+.motif-parang{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Cg fill='none' stroke='%23B4905A' stroke-width='1' stroke-opacity='0.2'%3E%3Cpath d='M-10 90 C 10 70, 10 50, 30 30 C 50 10, 50 -10, 70 -30'/%3E%3Cpath d='M10 90 C 30 70, 30 50, 50 30 C 70 10, 70 -10, 90 -30'/%3E%3Cpath d='M-30 90 C -10 70, -10 50, 10 30 C 30 10, 30 -10, 50 -30'/%3E%3C/g%3E%3C/svg%3E");
+  background-repeat:repeat;
+}
+/* Truntum — small "guiding star" motif traditionally worn by parents at a
+   Javanese wedding as a blessing that love keeps leading the way; used
+   here behind the Pertemuan Kami (our story) section about destiny. */
+/* Bunga — a small five-petal flower outline, tiled as a background motif
+   for the Pertemuan Kami (our story) section. */
+.motif-bunga{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Cg transform='translate(30,28)' fill='none' stroke='%23B4905A' stroke-width='0.8' stroke-opacity='0.22'%3E%3Cellipse cx='0' cy='-9' rx='4.5' ry='7'/%3E%3Cellipse cx='0' cy='-9' rx='4.5' ry='7' transform='rotate(72)'/%3E%3Cellipse cx='0' cy='-9' rx='4.5' ry='7' transform='rotate(144)'/%3E%3Cellipse cx='0' cy='-9' rx='4.5' ry='7' transform='rotate(216)'/%3E%3Cellipse cx='0' cy='-9' rx='4.5' ry='7' transform='rotate(288)'/%3E%3C/g%3E%3Ccircle cx='30' cy='28' r='2' fill='%23B4905A' fill-opacity='0.22'/%3E%3C/svg%3E");
+  background-repeat:repeat;
+}
+.motif-ceplok{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='50'%3E%3Cg fill='none' stroke='%23B4905A' stroke-width='0.8' stroke-opacity='0.2'%3E%3Crect x='10' y='10' width='30' height='30' transform='rotate(45 25 25)'/%3E%3Ccircle cx='25' cy='25' r='6'/%3E%3C/g%3E%3C/svg%3E");
+  background-repeat:repeat;
+}
+
+/* Tumpal-inspired triangle seam, echoing the pointed border woven along the
+   edge of a traditional kain/sarong — used as a decorative hand-off
+   wherever the page shifts from an ivory section into an emerald one. */
+.tumpal-strip{
+  width:100%; height:14px; margin:-96px auto 40px;
+  background-image:
+    linear-gradient(45deg, var(--gold) 50%, transparent 50%),
+    linear-gradient(-45deg, var(--gold) 50%, transparent 50%);
+  background-size:20px 14px;
+  background-position:0 0, 0 0;
+  background-repeat:repeat-x;
+  opacity:0.5;
+}
+
+.fade-up{ opacity:0; transform:translateY(24px); transition:opacity .8s ease, transform .8s ease; transition-delay:var(--delay, 0s); }
+.fade-up.in{ opacity:1; transform:none; }
+
+/* Slide in from the left — used for the bride's side in the couple section
+   and the first event card, so paired content visibly "arrives" from
+   opposite directions. */
+.fade-side-l{ opacity:0; transform:translateX(-44px); transition:opacity .8s ease, transform .8s ease; transition-delay:var(--delay, 0s); }
+.fade-side-l.in{ opacity:1; transform:none; }
+
+/* Mirror of fade-side-l — slides in from the right. */
+.fade-side-r{ opacity:0; transform:translateX(44px); transition:opacity .8s ease, transform .8s ease; transition-delay:var(--delay, 0s); }
+.fade-side-r.in{ opacity:1; transform:none; }
+
+/* Gentle scale-up-and-settle with a slight overshoot — used for the "&"
+   between the couple, and the gallery photo popping into its frame. */
+.zoom-in{ opacity:0; transform:scale(.86); transition:opacity .7s ease, transform .7s cubic-bezier(.34,1.56,.64,1); transition-delay:var(--delay, 0s); }
+.zoom-in.in{ opacity:1; transform:none; }
+
+/* Springier pop, for small discrete items revealed in a group — the
+   countdown cells and the digital-gift cards. */
+.pop-in{ opacity:0; transform:scale(.7) translateY(10px); transition:opacity .55s ease, transform .55s cubic-bezier(.34,1.56,.64,1); transition-delay:var(--delay, 0s); }
+.pop-in.in{ opacity:1; transform:none; }
+
+/* ---------- Audio toggle with pulse ---------- */
+.audio-toggle{
+  position:fixed; top:18px; right:18px; z-index:50;
+  width:44px; height:44px; border-radius:50%; border:1px solid var(--gold);
+  background:var(--emerald-deep); color:var(--gold); cursor:pointer;
+  display:flex; align-items:center; justify-content:center; font-size:16px;
+  overflow:visible;
+}
+.pulse-ring{
+  position:absolute; inset:0; border-radius:50%; border:1px solid var(--gold);
+  opacity:0; pointer-events:none;
+}
+.audio-toggle.playing .pulse-ring{ animation:pulseRing 1.8s ease-out infinite; }
+.audio-toggle.playing .audio-icon{ animation:iconSway 1.6s ease-in-out infinite; }
+@keyframes pulseRing{
+  0%{ transform:scale(1); opacity:.55; }
+  100%{ transform:scale(1.9); opacity:0; }
+}
+@keyframes iconSway{
+  0%,100%{ transform:translateY(0); }
+  50%{ transform:translateY(-2px); }
+}
+
+/* content stacking above particle canvas */
+section, footer{ position:relative; z-index:2; }
+
+/* ---------- Slide navigation — round emoji buttons, fixed at the bottom ---------- */
+/* ---------- Full-screen one-by-one slides ---------- */
+html{
+  scroll-snap-type:y mandatory;
+  scroll-behavior:smooth;
+}
+body{
+  scroll-snap-type:y mandatory;
+}
+section{
+  scroll-snap-align:start;
+  scroll-snap-stop:always;
+  min-height:100svh;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  overflow:hidden;
+}
+section.section{
+  padding-top:clamp(56px, 8vh, 96px);
+  padding-bottom:clamp(56px, 8vh, 88px);
+}
+#cover{
+  min-height:100svh !important;
+}
+#opening,
+#countdown-slide,
+#gallery,
+#rsvp{
+  min-height:100svh;
+}
+#closing{
+  min-height:100svh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+/* Sections with more content remain usable on short screens */
+@media (max-height:700px){
+  section{
+    overflow-y:auto;
+    justify-content:flex-start;
+  }
+  #cover,
+  #opening,
+  #countdown-slide,
+  #gallery,
+  #rsvp,
+  #closing{
+    justify-content:center;
+  }
+}
+
+.slide-nav{
+  position:fixed; left:50%; bottom:16px; z-index:60;
+  transform:translateX(-50%);
+  display:flex; align-items:center; gap:4px;
+  max-width:94vw; overflow-x:auto;
+  padding:6px; border-radius:999px;
+  background:rgba(74,11,24,0.88);
+  border:1px solid var(--line);
+  box-shadow:0 10px 28px -14px rgba(74,53,32,0.3);
+  backdrop-filter:blur(8px);
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+  transition:opacity .5s ease .15s, transform .5s ease .15s;
+}
+.slide-nav::-webkit-scrollbar{ display:none; }
+body.locked .slide-nav{ opacity:0; transform:translateX(-50%) translateY(12px); pointer-events:none; }
+
+.slide-dot{
+  flex:0 0 auto; width:34px; height:34px; border-radius:50%;
+  border:1px solid transparent; background:transparent; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  font-size:15px; line-height:1; padding:0;
+  opacity:0.55;
+  transition:opacity .25s ease, border-color .25s ease, background .25s ease, transform .25s ease;
+}
+.slide-dot:hover{ opacity:0.85; }
+.slide-dot:focus-visible{ outline:2px solid var(--gold-light); outline-offset:2px; }
+.slide-dot.active{
+  opacity:1; border-color:var(--gold); background:rgba(180,144,90,0.22);
+  transform:scale(1.15);
+}
+
+@media(max-width:480px){
+  .slide-dot{ width:30px; height:30px; font-size:13px; }
+}
+
+@media(min-width:640px){
+  .couple-grid{ flex-direction:row; align-items:center; justify-content:center; }
+  .event-cards{ flex-direction:row; }
+  .event-card{ flex:1; }
+}
+
+@media (prefers-reduced-motion: reduce){
+  *{ transition:none !important; animation:none !important; }
+}
